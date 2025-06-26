@@ -284,12 +284,24 @@ export const bankAPI = {
   createAccount: async (accountData) => {
     try {
       console.log('Creating account:', accountData);
-      const response = await api.post('/api/accounts', accountData);
+      // Make sure teamId is included in both query params and request body
+      const response = await api.post('/api/accounts', {
+        ...accountData,
+        teamId: 'demo-team'
+      }, {
+        params: {
+          teamId: 'demo-team'
+        }
+      });
       console.log('Account created:', response.data);
       return response.data;
     } catch (error) {
       console.error('Create Account Error:', error);
-      throw new Error(error.response?.data?.error || 'Failed to create account');
+      const errorMessage = error.response?.data?.error || 
+                          error.response?.data?.message || 
+                          error.message || 
+                          'Failed to create account';
+      throw new Error(errorMessage);
     }
   }
 };

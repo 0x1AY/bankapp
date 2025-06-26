@@ -95,7 +95,12 @@ const AccountsPage = ({ onViewAccountDetails, onTransferFromAccount }) => {
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    if (!formLoading) {
+      setIsModalOpen(false);
+      setFormError('');
+      setFormSuccess('');
+      setFormData({ accountHolder: '', accountType: 'checking', initialBalance: '' });
+    }
   };
 
   const handleFormChange = (e) => {
@@ -108,22 +113,49 @@ const AccountsPage = ({ onViewAccountDetails, onTransferFromAccount }) => {
     setFormError('');
     setFormSuccess('');
     setFormLoading(true);
+
+    // Validate form data
+    if (!formData.accountHolder.trim()) {
+      setFormError('Account holder name is required');
+      setFormLoading(false);
+      return;
+    }
+
+    if (!formData.accountType) {
+      setFormError('Account type is required');
+      setFormLoading(false);
+      return;
+    }
+
+    const balance = parseFloat(formData.initialBalance);
+    if (isNaN(balance) || balance < 0) {
+      setFormError('Initial balance must be a valid non-negative number');
+      setFormLoading(false);
+      return;
+    }
+
     try {
       const payload = {
-        accountHolder: formData.accountHolder,
+        accountHolder: formData.accountHolder.trim(),
         accountType: formData.accountType,
-        balance: parseFloat(formData.initialBalance) || 0,
+        balance: balance,
+        teamId: 'demo-team'  // Add team ID to the payload
       };
+
+      console.log('Creating account with payload:', payload);
       await bankAPI.createAccount(payload);
+      await fetchAccounts(); // Refresh the accounts list
       setFormSuccess('Account created successfully!');
-      setFormData({ accountHolder: '', accountType: 'checking', initialBalance: '' });
-      await fetchAccounts();
+      
+      // Only close the modal and reset form after success
       setTimeout(() => {
-        setIsModalOpen(false);
+        setFormData({ accountHolder: '', accountType: 'checking', initialBalance: '' });
         setFormSuccess('');
-      }, 1200);
-    } catch (err) {
-      setFormError(err.message || 'Failed to create account');
+        setIsModalOpen(false);
+      }, 2000); // Give user more time to see success message
+    } catch (error) {
+      console.error('Failed to create account:', error);
+      setFormError(error.message || 'Failed to create account. Please try again.');
     } finally {
       setFormLoading(false);
     }
@@ -169,51 +201,89 @@ const AccountsPage = ({ onViewAccountDetails, onTransferFromAccount }) => {
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
           <form className="space-y-4 p-4 w-full max-w-md" onSubmit={handleFormSubmit}>
-            <h2 className="text-xl font-bold mb-2">Add New Account</h2>
-            {formError && <div className="bg-red-50 text-red-700 px-3 py-2 rounded">{formError}</div>}
-            {formSuccess && <div className="bg-success-50 text-success-700 px-3 py-2 rounded">{formSuccess}</div>}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Account Holder</label>
-              <input
-                type="text"
-                name="accountHolder"
-                value={formData.accountHolder}
-                onChange={handleFormChange}
-                required
-                className="input-field"
-                placeholder="Full Name"
-              />
+            <h2 className="text-xl font-bold mb-4">Add New Account</h2>
+            
+            {formError && (
+              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-md mb-4">
+                {formError}
+              </div>
+            )}
+            
+            {formSuccess && (
+              <div className="bg-green-50 text-green-700 px-4 py-3 rounded-md mb-4">
+                {formSuccess}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Account Holder Name
+                </label>
+                <input
+                  type="text"
+                  name="accountHolder"
+                  value={formData.accountHolder}
+                  onChange={handleFormChange}
+                  disabled={formLoading}
+                  required
+                  className="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Enter full name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Account Type
+                </label>
+                <select
+                  name="accountType"
+                  value={formData.accountType}
+                  onChange={handleFormChange}
+                  disabled={formLoading}
+                  required
+                  className="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="checking">Checking</option>
+                  <option value="savings">Savings</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Initial Balance
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2 text-gray-500">$</span>
+                  <input
+                    type="number"
+                    name="initialBalance"
+                    value={formData.initialBalance}
+                    onChange={handleFormChange}
+                    disabled={formLoading}
+                    min="0"
+                    step="0.01"
+                    className="input-field w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    placeholder="0.00"
+                  />
+                </div>
+              </div>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Account Type</label>
-              <select
-                name="accountType"
-                value={formData.accountType}
-                onChange={handleFormChange}
-                className="input-field"
+
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                type="button"
+                onClick={handleCloseModal}
+                disabled={formLoading}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
               >
-                <option value="checking">Checking</option>
-                <option value="savings">Savings</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Initial Balance</label>
-              <input
-                type="number"
-                name="initialBalance"
-                value={formData.initialBalance}
-                onChange={handleFormChange}
-                min="0"
-                step="0.01"
-                className="input-field"
-                placeholder="0.00"
-              />
-            </div>
-            <div className="flex justify-end space-x-2 mt-4">
-              <button type="button" className="btn-secondary" onClick={handleCloseModal} disabled={formLoading}>
                 Cancel
               </button>
-              <button type="submit" className="btn-primary" disabled={formLoading}>
+              <button
+                type="submit"
+                disabled={formLoading}
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
                 {formLoading ? 'Creating...' : 'Create Account'}
               </button>
             </div>
