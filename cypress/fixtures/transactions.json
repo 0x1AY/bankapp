@@ -1,0 +1,65 @@
+[
+  {
+    "id": "1",
+    "accountId": "1234567890",
+    "type": "deposit",
+    "amount": 2000,
+    "description": "Salary deposit",
+    "timestamp": "2023-12-01T09:00:00Z",
+    "accountName": "John Doe"
+  },
+  {
+    "id": "2",
+    "accountId": "1234567890",
+    "type": "withdrawal",
+    "amount": 500,
+    "description": "ATM withdrawal",
+    "timestamp": "2023-12-02T14:30:00Z",
+    "accountName": "John Doe"
+  },
+  {
+    "id": "3",
+    "accountId": "0987654321",
+    "type": "deposit",
+    "amount": 3000,
+    "description": "Initial deposit",
+    "timestamp": "2023-12-01T11:00:00Z",
+    "accountName": "Jane Smith"
+  },
+  {
+    "id": "4",
+    "accountId": "0987654321",
+    "type": "transfer",
+    "amount": 500,
+    "description": "Transfer to John",
+    "timestamp": "2023-12-03T16:00:00Z",
+    "accountName": "Jane Smith"
+  },
+  {
+    "id": "5",
+    "accountId": "1122334455",
+    "type": "deposit",
+    "amount": 100,
+    "description": "Initial deposit",
+    "timestamp": "2023-12-01T13:00:00Z",
+    "accountName": "El Ildaro"
+  },
+  {
+    "id": "6",
+    "accountId": "1122334455",
+    "type": "withdrawal",
+    "amount": 66,
+    "description": "ATM withdrawal",
+    "timestamp": "2023-12-02T10:00:00Z",
+    "accountName": "El Ildaro"
+  },
+  {
+    "id": "7",
+    "accountId": "5566778899",
+    "type": "deposit",
+    "amount": 3000000,
+    "description": "Initial deposit",
+    "timestamp": "2023-12-01T14:00:00Z",
+    "accountName": "juancho"
+  }
+] 

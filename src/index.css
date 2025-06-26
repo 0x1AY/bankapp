@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-200 p-6;
+  }
+  
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+  }
+
+  /* Color variants for status indicators */
+  .bg-success-100 {
+    @apply bg-green-100;
+  }
+  
+  .text-success-600 {
+    @apply text-green-600;
+  }
+  
+  .text-success-700 {
+    @apply text-green-700;
+  }
+  
+  .bg-success-50 {
+    @apply bg-green-50;
+  }
+  
+  .border-success-200 {
+    @apply border-green-200;
+  }
+  
+  .bg-warning-100 {
+    @apply bg-yellow-100;
+  }
+  
+  .text-warning-600 {
+    @apply text-yellow-600;
+  }
+  
+  .text-warning-700 {
+    @apply text-yellow-700;
+  }
+  
+  .bg-warning-50 {
+    @apply bg-yellow-50;
+  }
+  
+  .border-warning-200 {
+    @apply border-yellow-200;
+  }
+} 
