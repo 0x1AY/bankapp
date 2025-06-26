@@ -17,21 +17,29 @@ const Dashboard = ({ onViewAccountDetails, onTransferFromAccount, onTransferFrom
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      console.log('Fetching dashboard data...');
+      setError('');
+      console.log('Dashboard: Starting to fetch data...');
       
-      const [accountsData, transactionsData] = await Promise.all([
-        bankAPI.getAccounts(),
-        bankAPI.getTransactions()
-      ]);
+      // Fetch accounts first to see if it works
+      console.log('Dashboard: Fetching accounts...');
+      const accountsData = await bankAPI.getAccounts();
+      console.log('Dashboard: Accounts fetched successfully:', accountsData);
       
-      console.log('Accounts data:', accountsData);
-      console.log('Transactions data:', transactionsData);
+      // Then fetch transactions
+      console.log('Dashboard: Fetching transactions...');
+      const transactionsData = await bankAPI.getTransactions();
+      console.log('Dashboard: Transactions fetched successfully:', transactionsData);
       
       setAccounts(accountsData);
       setTransactions(transactionsData.slice(0, 5)); // Show only recent 5 transactions
     } catch (error) {
-      console.error('Dashboard data fetch error:', error);
-      setError('Failed to load dashboard data');
+      console.error('Dashboard: Data fetch error details:', {
+        message: error.message,
+        stack: error.stack,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      setError(`Failed to load dashboard data: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -59,12 +67,16 @@ const Dashboard = ({ onViewAccountDetails, onTransferFromAccount, onTransferFrom
   if (error) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-600">{error}</p>
+        <p className="text-red-600 mb-2">{error}</p>
+        <pre className="text-sm text-gray-600 mb-4 max-w-2xl mx-auto overflow-auto">
+          {/* Show detailed error info */}
+          Check the console for more details (F12)
+        </pre>
         <button 
           onClick={fetchDashboardData}
-          className="mt-4 btn-primary"
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
-          Retry
+          Try Again
         </button>
       </div>
     );
